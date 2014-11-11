@@ -28,11 +28,6 @@ public class Player : MonoBehaviour {
 		{
 			stealItem (); 
 			sendItem ();
-			cartAnim.SetInteger ("FeedGiant", 0);
-		}
-		else 
-		{
-			cartAnim.SetInteger ("FeedGiant", 1);
 		}
 	}
 
@@ -120,7 +115,5 @@ public class Player : MonoBehaviour {
 		anim = gameObject.GetComponent <Animator> ();
 		anim.SetInteger ("Send", 0);
 		anim.SetInteger ("Steal", 0);
-		cartAnim = GameObject.Find ("wheelbarrow").GetComponent<Animator> ();
-		cartAnim.SetInteger ("FeedGiant", 0);
 	}
 }
