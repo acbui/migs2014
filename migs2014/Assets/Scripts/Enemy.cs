@@ -7,6 +7,8 @@ public class Enemy : MonoBehaviour {
 	public float currentHunger;
 	public float maxHunger;
 
+	public bool hungry;
+
 	public Animator anim;
 	public Player player;
 
@@ -20,10 +22,13 @@ public class Enemy : MonoBehaviour {
 
 	void Update () 
 	{
-		if (!lookingAway)
+		if (!hungry)
 		{
-			catchSteal ();
-			StartCoroutine (lookAway ((float) Random.Range (minDelay, maxDelay)));
+			hungerLevel ();
+			if (!lookingAway)
+			{
+				StartCoroutine (lookAway ((float) Random.Range (minDelay, maxDelay)));
+			}
 		}
 	}
 
@@ -32,6 +37,10 @@ public class Enemy : MonoBehaviour {
 		if (player.stealingItem)
 		{
 			getMad ();
+		}
+		else 
+		{
+			StartCoroutine (lookBack (2.0f));
 		}
 	}
 
@@ -44,14 +53,20 @@ public class Enemy : MonoBehaviour {
 
 		if (currentHunger >= maxHunger)
 		{
+			hungry = true;
 			if (player.foodCart <= 0)
 			{
-				getMad();
+				lookingAway = true;
+				anim.SetInteger ("Look", 1);
+				getMad ();
+				currentHunger = 0;
 			}
 			else {
 				player.sendingCart = true;
-				anim.SetInteger ("Eat", 1);
-				StartCoroutine (stopEating(0.2f));
+				lookingAway = true;
+				anim.SetInteger ("Look", 1);
+				StartCoroutine (stopEating (1.0f));
+				StartCoroutine (lookBack (2.0f));
 			}
 		}
 		else 
@@ -62,17 +77,17 @@ public class Enemy : MonoBehaviour {
 
 	void getMad()
 	{
+		anim.SetInteger ("Angry", 1);
 		if (player.lives == 2)
 		{
 			player.lives = 1;
 			player.foodStock -= player.foodStock/2;
-			anim.SetInteger ("Angry", 1);
 			StartCoroutine (backToIdle (0.2f));
+			StartCoroutine (lookBack (1.5f));
 		}
 		else if (player.lives == 1)
 		{
 			player.lives = 0;
-			anim.SetInteger ("Angry", 2);
 			StartCoroutine (backToIdle (0.2f));
 		}
 		else if (player.lives == 0)
@@ -85,6 +100,7 @@ public class Enemy : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(pDelay);
 		anim.SetInteger ("Angry", 0);
+		hungry = false;
 		if (player.lives == 0)
 		{
 			GameManager.ins.endGame();
@@ -94,10 +110,10 @@ public class Enemy : MonoBehaviour {
 	IEnumerator stopEating(float pDelay)
 	{
 		yield return new WaitForSeconds(pDelay);
-		anim.SetInteger ("Eat", 0);
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
 		player.sendingCart = false;
+		hungry = false;
 		player.updateCart ();
 	}
 
@@ -106,7 +122,7 @@ public class Enemy : MonoBehaviour {
 		yield return new WaitForSeconds (pDelay);
 		lookingAway = true;
 		anim.SetInteger ("Look", 1);
-		StartCoroutine (lookBack (0.2f));
+		catchSteal ();
 	}
 	
 	IEnumerator lookBack(float pDelay)

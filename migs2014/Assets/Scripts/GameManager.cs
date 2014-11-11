@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour {
 
 	public void endGame()
 	{
-		Application.LoadLevel ("Scores");
+		print ("end");
+		//Application.LoadLevel ("Scores");
 	}
 }

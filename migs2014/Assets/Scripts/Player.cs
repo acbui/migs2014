@@ -87,7 +87,7 @@ public class Player : MonoBehaviour {
 		{
 			foods[0].enabled = true;
 		}
-		else if (foodCart >= 2)
+		else if (foodCart >= 2 && foodCart < 4)
 		{
 			for (int i = 0; i < foodCart; i++)
 			{
@@ -114,7 +114,5 @@ public class Player : MonoBehaviour {
 		anim = gameObject.GetComponent <Animator> ();
 		anim.SetInteger ("Send", 0);
 		anim.SetInteger ("Steal", 0);
-
-//		foods = new SpriteRenderer[4]; 
 	}
 }
