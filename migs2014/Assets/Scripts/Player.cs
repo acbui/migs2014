@@ -94,7 +94,7 @@ public class Player : MonoBehaviour {
 		foodStock++;
 		updateBag ();
 		updatePile ();
-		GameManager.ins.score = foodStock;
+		//GameManager.ins.score = foodStock;
 		stealingItem = false; 
 	}
 

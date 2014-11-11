@@ -15,7 +15,14 @@ public class SwitchScenes : MonoBehaviour {
 			if (Application.loadedLevelName.Equals ("Title"))
 				Application.LoadLevel ("Instructions");
 			if (Application.loadedLevelName.Equals ("Instructions"))
-				Application.LoadLevel ("Main");
+			{
+				if (GameObject.Find("FirstInstructions") != null)
+				{
+					Destroy (GameObject.Find("FirstInstructions"));
+				}
+				else 
+					Application.LoadLevel ("Main");
+			}
 			if (Application.loadedLevelName.Equals ("Scores"))
 				Application.LoadLevel ("Title");
 

@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour {
 			player.byeFriend ();
 			player.foodStock = 0;
 			player.updateBag ();
-			GameManager.ins.score = player.foodStock;
+			GameManager.ins.score += player.foodStock;
 			lookingAtElves = false;
 		}
 		else if (player.lives == 1)
