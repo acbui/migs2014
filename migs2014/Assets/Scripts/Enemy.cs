@@ -79,20 +79,6 @@ public class Enemy : MonoBehaviour {
 		print ("mad");
 		anim.SetInteger ("Angry", 1);
 		currentHunger = 0;
-		if (player.lives == 2)
-		{
-			player.lives = 1;
-			player.byeFriend ();
-			player.foodStock = 0;
-			player.updateBag ();
-			GameManager.ins.score = player.foodStock;
-			lookingAtElves = false;
-		}
-		else if (player.lives == 1)
-		{
-			player.lives = 0;
-			GameManager.ins.endGame();
-		}
 		StartCoroutine (stopAnger (0.4f));
 		hungry = false;
 	}
@@ -132,12 +118,33 @@ public class Enemy : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (pDelay);
 		anim.SetInteger ("Angry", 0);
+		if (player.lives == 2)
+		{
+			player.lives = 1;
+			player.byeFriend ();
+			player.foodStock = 0;
+			player.updateBag ();
+			GameManager.ins.score = player.foodStock;
+			lookingAtElves = false;
+		}
+		else if (player.lives == 1)
+		{
+			player.lives = 0;
+			StartCoroutine (lastLife());
+		}
+
 	}
 
 	IEnumerator stopCart(float pDelay)
 	{
 		yield return new WaitForSeconds (pDelay);
 		cartAnim.SetInteger ("FeedGiant", 1);
+	}
+
+	IEnumerator lastLife()
+	{
+		yield return new WaitForSeconds (1.0f);
+		GameManager.ins.endGame();
 	}
 
 	public void initializeGiant()

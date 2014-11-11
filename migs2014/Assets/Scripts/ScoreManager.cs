@@ -29,6 +29,7 @@ public class ScoreManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		score = GameManager.ins.score; 
+		Destroy (GameManager.ins.gameObject);
 		getCurrentScores ();
 		getInput = false;
 		prepScores = true;
@@ -53,9 +54,8 @@ public class ScoreManager : MonoBehaviour {
 				PlayerPrefs.DeleteAll();
 				getCurrentScores();
 			}
-			else if (Input.GetKeyDown(KeyCode.Space)){
-				Destroy (GameObject.Find ("GameManager"));
-				Application.LoadLevel ("Main"); 
+			else if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)){
+				Application.LoadLevel ("Title"); 
 				this.enabled = false;
 			}
 		}

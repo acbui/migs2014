@@ -31,10 +31,10 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!sendingCart)
-		{
-			stealItem (); 
+		{ 
 			sendItem ();
 		}
+		stealItem ();
 	}
 
 	void stealItem()
