@@ -15,6 +15,7 @@ public class Player : MonoBehaviour {
 	public bool sendingCart;
 
 	public Animator anim;
+	public Animator cartAnim;
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +28,11 @@ public class Player : MonoBehaviour {
 		{
 			stealItem (); 
 			sendItem ();
+			cartAnim.SetInteger ("FeedGiant", 0);
+		}
+		else 
+		{
+			cartAnim.SetInteger ("FeedGiant", 1);
 		}
 	}
 
@@ -70,7 +76,7 @@ public class Player : MonoBehaviour {
 		yield return new WaitForSeconds (pDelay);
 		anim.SetInteger ("Steal", 0);
 		foodStock++;
-		//GameManager.ins.score = foodStock;
+		GameManager.ins.score = foodStock;
 		stealingItem = false; 
 	}
 
@@ -114,5 +120,7 @@ public class Player : MonoBehaviour {
 		anim = gameObject.GetComponent <Animator> ();
 		anim.SetInteger ("Send", 0);
 		anim.SetInteger ("Steal", 0);
+		cartAnim = GameObject.Find ("wheelbarrow").GetComponent<Animator> ();
+		cartAnim.SetInteger ("FeedGiant", 0);
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour {
 
-	public bool lookingAway;
+	public bool lookingAtElves;
 	public float currentHunger;
 	public float maxHunger;
 
@@ -25,25 +25,31 @@ public class Enemy : MonoBehaviour {
 		if (!hungry)
 		{
 			hungerLevel ();
-			if (!lookingAway)
+			if (!lookingAtElves)
 			{
-				StartCoroutine (lookAway ((float) Random.Range (minDelay, maxDelay)));
+				//StartCoroutine (lookAway ((float) Random.Range (minDelay, maxDelay)));
+			}
+
+			if (lookingAtElves || hungry)
+			{
+				print ("turn around");
+				anim.SetInteger ("Look", 1);
+				if (player.foodCart <= 0 || player.stealingItem)
+				{
+					getMad ();
+				}
+				else 
+				{
+					print ("cart");
+					player.sendingCart = true;
+					lookingAtElves = false;
+					StartCoroutine (stopEating (1.0f));
+				}
 			}
 		}
 	}
 
-	void catchSteal()
-	{
-		if (player.stealingItem)
-		{
-			getMad ();
-		}
-		else 
-		{
-			StartCoroutine (lookBack (2.0f));
-		}
-	}
-
+	// update hunger level
 	void hungerLevel()
 	{
 		if (player.foodCart + player.foodStock >= player.maxFood)
@@ -54,20 +60,6 @@ public class Enemy : MonoBehaviour {
 		if (currentHunger >= maxHunger)
 		{
 			hungry = true;
-			if (player.foodCart <= 0)
-			{
-				lookingAway = true;
-				anim.SetInteger ("Look", 1);
-				getMad ();
-				currentHunger = 0;
-			}
-			else {
-				player.sendingCart = true;
-				lookingAway = true;
-				anim.SetInteger ("Look", 1);
-				StartCoroutine (stopEating (1.0f));
-				StartCoroutine (lookBack (2.0f));
-			}
 		}
 		else 
 		{
@@ -77,64 +69,49 @@ public class Enemy : MonoBehaviour {
 
 	void getMad()
 	{
+		print ("mad");
 		anim.SetInteger ("Angry", 1);
+		currentHunger = 0;
 		if (player.lives == 2)
 		{
 			player.lives = 1;
-			player.foodStock -= player.foodStock/2;
-			StartCoroutine (backToIdle (0.2f));
-			StartCoroutine (lookBack (1.5f));
+			player.foodStock = 0;
+			GameManager.ins.score = player.foodStock;
+			anim.SetInteger ("Look", 0);
+			lookingAtElves = false;
 		}
 		else if (player.lives == 1)
 		{
 			player.lives = 0;
-			StartCoroutine (backToIdle (0.2f));
-		}
-		else if (player.lives == 0)
-		{
-			GameManager.ins.endGame ();
-		}
-	}
-
-	IEnumerator backToIdle(float pDelay)
-	{
-		yield return new WaitForSeconds(pDelay);
-		anim.SetInteger ("Angry", 0);
-		hungry = false;
-		if (player.lives == 0)
-		{
 			GameManager.ins.endGame();
 		}
+		anim.SetInteger ("Angry", 0);
+		hungry = false;
 	}
 
+	// if giant eats cart food
 	IEnumerator stopEating(float pDelay)
 	{
-		yield return new WaitForSeconds(pDelay);
+		print ("stop eating");
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
 		player.sendingCart = false;
-		hungry = false;
 		player.updateCart ();
+		anim.SetInteger ("Look", 0);
+		yield return new WaitForSeconds(pDelay);
+		print ("stopped eating after " + pDelay);
+		hungry = false;
 	}
 
 	IEnumerator lookAway(float pDelay)
 	{
 		yield return new WaitForSeconds (pDelay);
-		lookingAway = true;
-		anim.SetInteger ("Look", 1);
-		catchSteal ();
-	}
-	
-	IEnumerator lookBack(float pDelay)
-	{
-		yield return new WaitForSeconds(pDelay);
-		anim.SetInteger ("Look", 0);
-		lookingAway = false;
+		lookingAtElves = true;
 	}
 
 	public void initializeGiant()
 	{
-		lookingAway = false;
+		lookingAtElves = false;
 		
 		player = GameObject.Find ("Player").GetComponent<Player>() as Player;
 		anim = gameObject.GetComponent<Animator> ();

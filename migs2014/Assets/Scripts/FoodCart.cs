@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Giant : MonoBehaviour {
+public class FoodCart : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
