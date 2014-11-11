@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		updateHunger ();
+		if (Application.loadedLevelName.Equals ("Main"))
+			updateHunger ();
 	}
 
 	void updateHunger()

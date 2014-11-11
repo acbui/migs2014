@@ -11,7 +11,10 @@ public class Player : MonoBehaviour {
 	public SpriteRenderer[] foods;
 	public Sprite[] bags; 
 	public SpriteRenderer friend;
+	public Animator friendAnim;
 	public SpriteRenderer bag;
+
+	public Enemy giant; 
 
 	public SpriteRenderer[] foodPiles;
 
@@ -31,10 +34,10 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!sendingCart)
-		{
-			stealItem (); 
+		{ 
 			sendItem ();
 		}
+		stealItem ();
 	}
 
 	void stealItem()
@@ -43,9 +46,17 @@ public class Player : MonoBehaviour {
 		{
 			if (!stealingItem)
 			{
-				stealingItem = true;
-				anim.SetInteger ("Steal", 1);
-				StartCoroutine (safeSteal(0.7f));
+				if (giant.hungry || giant.lookingAtElves)
+				{
+					giant.getMad();
+				}
+				else 
+				{
+					stealingItem = true;
+					anim.SetInteger ("Steal", 1);
+					friendAnim.SetInteger ("Steal", 1);
+					StartCoroutine (safeSteal(0.7f));
+				}
 			}
 		}
 	}
@@ -58,6 +69,7 @@ public class Player : MonoBehaviour {
 			{
 				sendingItem = true;
 				anim.SetInteger ("Send", 1);
+				friendAnim.SetInteger ("Send", 1);
 				StartCoroutine (endSend(0.7f));
 			}
 		}
@@ -70,6 +82,7 @@ public class Player : MonoBehaviour {
 		updateCart ();
 		updatePile ();
 		anim.SetInteger ("Send", 0);
+		friendAnim.SetInteger ("Send", 0);
 		sendingItem = false; 
 	}
 
@@ -77,6 +90,7 @@ public class Player : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (pDelay);
 		anim.SetInteger ("Steal", 0);
+		friendAnim.SetInteger ("Steal", 0);
 		foodStock++;
 		updateBag ();
 		updatePile ();
@@ -142,18 +156,12 @@ public class Player : MonoBehaviour {
 				}
 			}
 		}
-		else
-		{
-			foreach (SpriteRenderer s in foodPiles)
-			{
-				foodPiles[0].enabled = false;
-			}
-		}
 	}
 
 	public void byeFriend()
 	{
-		friend.enabled = false;
+		friendAnim.SetBool ("Dead", true);
+		StartCoroutine (killFriend ());
 	}
 
 	public void initializePlayer()
@@ -168,5 +176,11 @@ public class Player : MonoBehaviour {
 		anim.SetInteger ("Send", 0);
 		anim.SetInteger ("Steal", 0);
 		updatePile ();
+	}
+	
+	IEnumerator killFriend()
+	{
+		yield return new WaitForSeconds (1f);
+		friend.enabled = false;
 	}
 }
