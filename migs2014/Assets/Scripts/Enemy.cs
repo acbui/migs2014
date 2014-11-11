@@ -15,16 +15,16 @@ public class Enemy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		lookingAway = false;
-
-		player = GameObject.Find ("Player").GetComponent<Player>() as Player;
-		anim = gameObject.GetComponent<Animator> ();
+		initializeGiant ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		catchSteal ();
-		StartCoroutine (lookAway (Random.Range (minDelay, maxDelay)));
+		if (!lookingAway)
+		{
+			StartCoroutine (lookAway (Random.Range (minDelay, maxDelay)));
+		}
 	}
 
 	void catchSteal()
@@ -38,13 +38,13 @@ public class Enemy : MonoBehaviour {
 					player.lives = 1;
 					player.foodStock = 0;
 					anim.SetInteger ("Angry", 1);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 				else 
 				{
 					player.lives = 0;
 					anim.SetInteger ("Angry", 2);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 			}
 		}
@@ -66,13 +66,13 @@ public class Enemy : MonoBehaviour {
 					player.lives = 1;
 					player.foodStock = 0;
 					anim.SetInteger ("Angry", 1);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 				else 
 				{
 					player.lives = 0;
 					anim.SetInteger ("Angry", 2);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 			}
 			else {
@@ -91,6 +91,7 @@ public class Enemy : MonoBehaviour {
 		yield return new WaitForSeconds (pDelay);
 		lookingAway = true;
 		anim.SetInteger ("Look", 1);
+		StartCoroutine (lookBack (0.2f));
 	}
 
 	IEnumerator backToIdle(float pDelay)
@@ -117,5 +118,14 @@ public class Enemy : MonoBehaviour {
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
 		player.sendingCart = false;
+	}
+
+	public void initializeGiant()
+	{
+		lookingAway = false;
+		
+		player = GameObject.Find ("Player").GetComponent<Player>() as Player;
+		anim = gameObject.GetComponent<Animator> ();
+		currentHunger = 0;
 	}
 }

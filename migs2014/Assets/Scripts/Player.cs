@@ -17,9 +17,7 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		lives = 2;
-		stealingItem = false; 
-		anim = gameObject.GetComponent <Animator> ();
+		initializePlayer ();
 	}
 	
 	// Update is called once per frame
@@ -72,5 +70,18 @@ public class Player : MonoBehaviour {
 		foodStock++;
 		GameManager.ins.score = foodStock;
 		stealingItem = false; 
+	}
+
+	public void initializePlayer()
+	{
+		lives = 2;
+		stealingItem = false; 
+		sendingItem = false;
+		sendingCart = false;
+		foodCart = 0;
+		foodStock = 0;
+		anim = gameObject.GetComponent <Animator> ();
+		anim.SetInteger ("Send", 0);
+		anim.SetInteger ("Steal", 0);
 	}
 }
