@@ -98,6 +98,7 @@ public class Enemy : MonoBehaviour {
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
 		player.sendingCart = false;
+		player.updateCart ();
 	}
 
 	IEnumerator lookAway(float pDelay)
