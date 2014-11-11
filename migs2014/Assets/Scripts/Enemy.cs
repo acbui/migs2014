@@ -74,7 +74,7 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	void getMad()
+	public void getMad()
 	{
 		print ("mad");
 		anim.SetInteger ("Angry", 1);
@@ -143,6 +143,7 @@ public class Enemy : MonoBehaviour {
 
 	IEnumerator lastLife()
 	{
+		player.anim.SetBool ("Dead", true);
 		yield return new WaitForSeconds (1.0f);
 		GameManager.ins.endGame();
 	}
