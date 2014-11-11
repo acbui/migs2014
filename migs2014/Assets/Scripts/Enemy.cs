@@ -21,7 +21,10 @@ public class Enemy : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		catchSteal ();
-		StartCoroutine (lookAway (Random.Range (minDelay, maxDelay)));
+		if (!lookingAway)
+		{
+			StartCoroutine (lookAway (Random.Range (minDelay, maxDelay)));
+		}
 	}
 
 	void catchSteal()
@@ -35,13 +38,13 @@ public class Enemy : MonoBehaviour {
 					player.lives = 1;
 					player.foodStock = 0;
 					anim.SetInteger ("Angry", 1);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 				else 
 				{
 					player.lives = 0;
 					anim.SetInteger ("Angry", 2);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 			}
 		}
@@ -63,13 +66,13 @@ public class Enemy : MonoBehaviour {
 					player.lives = 1;
 					player.foodStock = 0;
 					anim.SetInteger ("Angry", 1);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 				else 
 				{
 					player.lives = 0;
 					anim.SetInteger ("Angry", 2);
-					StartCoroutine (backToIdle (0.5f));
+					StartCoroutine (backToIdle (0.2f));
 				}
 			}
 			else {
@@ -88,6 +91,7 @@ public class Enemy : MonoBehaviour {
 		yield return new WaitForSeconds (pDelay);
 		lookingAway = true;
 		anim.SetInteger ("Look", 1);
+		StartCoroutine (lookBack (0.2f));
 	}
 
 	IEnumerator backToIdle(float pDelay)
