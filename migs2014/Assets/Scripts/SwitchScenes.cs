@@ -12,7 +12,13 @@ public class SwitchScenes : MonoBehaviour {
 	void Update () {
 		if (Input.GetMouseButtonDown (0) || Input.GetKeyDown (KeyCode.Space))
 		{
-			Application.LoadLevel ("Main");
+			if (Application.loadedLevelName.Equals ("Title"))
+				Application.LoadLevel ("Instructions");
+			if (Application.loadedLevelName.Equals ("Instructions"))
+				Application.LoadLevel ("Main");
+			if (Application.loadedLevelName.Equals ("Scores"))
+				Application.LoadLevel ("Title");
+
 		}
 	}
 }
