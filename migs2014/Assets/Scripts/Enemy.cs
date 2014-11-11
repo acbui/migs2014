@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour {
 	public bool hungry;
 
 	public Animator anim;
+	public Animator cartAnim;
 	public Player player;
 
 	public int minDelay;
@@ -42,6 +43,7 @@ public class Enemy : MonoBehaviour {
 				{
 					print ("cart");
 					player.sendingCart = true;
+					cartAnim.SetInteger ("FeedGiant", 1);
 					lookingAtElves = false;
 					StartCoroutine (stopEating (1.0f));
 				}
@@ -63,7 +65,7 @@ public class Enemy : MonoBehaviour {
 		}
 		else 
 		{
-			currentHunger++;
+			currentHunger += 0.5f;
 		}
 	}
 
@@ -77,7 +79,7 @@ public class Enemy : MonoBehaviour {
 			player.lives = 1;
 			player.foodStock = 0;
 			GameManager.ins.score = player.foodStock;
-			anim.SetInteger ("Look", 0);
+			StartCoroutine (stopLooking (0.5f));
 			lookingAtElves = false;
 		}
 		else if (player.lives == 1)
@@ -85,7 +87,7 @@ public class Enemy : MonoBehaviour {
 			player.lives = 0;
 			GameManager.ins.endGame();
 		}
-		anim.SetInteger ("Angry", 0);
+		StartCoroutine (stopAnger (0.4f));
 		hungry = false;
 	}
 
@@ -96,17 +98,37 @@ public class Enemy : MonoBehaviour {
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
 		player.sendingCart = false;
-		player.updateCart ();
-		anim.SetInteger ("Look", 0);
 		yield return new WaitForSeconds(pDelay);
 		print ("stopped eating after " + pDelay);
+		anim.SetInteger ("Look", 0);
+		cartAnim.SetInteger ("FeedGiant", 0);
+		player.updateCart ();
 		hungry = false;
+	}
+
+	IEnumerator stopLooking (float pDelay)
+	{
+		yield return new WaitForSeconds(pDelay);
+		print ("stopped looking after " + pDelay);
+		anim.SetInteger ("Look", 0);
 	}
 
 	IEnumerator lookAway(float pDelay)
 	{
 		yield return new WaitForSeconds (pDelay);
 		lookingAtElves = true;
+	}
+
+	IEnumerator stopAnger (float pDelay)
+	{
+		yield return new WaitForSeconds (pDelay);
+		anim.SetInteger ("Angry", 0);
+	}
+
+	IEnumerator stopCart(float pDelay)
+	{
+		yield return new WaitForSeconds (pDelay);
+		cartAnim.SetInteger ("FeedGiant", 1);
 	}
 
 	public void initializeGiant()
@@ -116,5 +138,7 @@ public class Enemy : MonoBehaviour {
 		player = GameObject.Find ("Player").GetComponent<Player>() as Player;
 		anim = gameObject.GetComponent<Animator> ();
 		currentHunger = 0;
+		cartAnim = GameObject.Find ("wheelbarrow").GetComponent<Animator> ();
+		cartAnim.SetInteger ("FeedGiant", 0);
 	}
 }
