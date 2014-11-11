@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour {
 
 	public Animator anim;
 	public Animator cartAnim;
+	public Animator bagAnim;
+	public SpriteRenderer bagbearer;
 	public Player player;
 
 	public int minDelay;
@@ -35,6 +37,7 @@ public class Enemy : MonoBehaviour {
 			{
 				print ("turn around");
 				anim.SetInteger ("Look", 1);
+				StartCoroutine (stopLooking (0.5f));
 				if (player.foodCart <= 0 || player.stealingItem)
 				{
 					getMad ();
@@ -44,6 +47,8 @@ public class Enemy : MonoBehaviour {
 					print ("cart");
 					player.sendingCart = true;
 					cartAnim.SetInteger ("FeedGiant", 1);
+					bagbearer.enabled = true;
+					bagAnim.SetInteger ("TakeBag", 1);
 					lookingAtElves = false;
 					StartCoroutine (stopEating (1.0f));
 				}
@@ -77,9 +82,10 @@ public class Enemy : MonoBehaviour {
 		if (player.lives == 2)
 		{
 			player.lives = 1;
+			player.byeFriend ();
 			player.foodStock = 0;
+			player.updateBag ();
 			GameManager.ins.score = player.foodStock;
-			StartCoroutine (stopLooking (0.5f));
 			lookingAtElves = false;
 		}
 		else if (player.lives == 1)
@@ -97,19 +103,22 @@ public class Enemy : MonoBehaviour {
 		print ("stop eating");
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
-		player.sendingCart = false;
 		yield return new WaitForSeconds(pDelay);
-		print ("stopped eating after " + pDelay);
+		player.sendingCart = false;
 		anim.SetInteger ("Look", 0);
 		cartAnim.SetInteger ("FeedGiant", 0);
+		bagAnim.SetInteger ("TakeBag", 0);
+		GameManager.ins.score += player.foodStock;
+		player.foodStock = 0;
+		player.updateBag ();
 		player.updateCart ();
 		hungry = false;
 	}
 
+
 	IEnumerator stopLooking (float pDelay)
 	{
 		yield return new WaitForSeconds(pDelay);
-		print ("stopped looking after " + pDelay);
 		anim.SetInteger ("Look", 0);
 	}
 

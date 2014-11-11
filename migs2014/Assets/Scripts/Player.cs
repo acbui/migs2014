@@ -9,6 +9,11 @@ public class Player : MonoBehaviour {
 	public int maxFood;
 
 	public SpriteRenderer[] foods;
+	public Sprite[] bags; 
+	public SpriteRenderer friend;
+	public SpriteRenderer bag;
+
+	public SpriteRenderer[] foodPiles;
 
 	public bool stealingItem; 
 	public bool sendingItem;
@@ -16,6 +21,7 @@ public class Player : MonoBehaviour {
 
 	public Animator anim;
 	public Animator cartAnim;
+
 
 	// Use this for initialization
 	void Start () {
@@ -50,8 +56,6 @@ public class Player : MonoBehaviour {
 		{
 			if (!sendingItem)
 			{
-				foodCart++;
-				updateCart ();
 				sendingItem = true;
 				anim.SetInteger ("Send", 1);
 				StartCoroutine (endSend(0.7f));
@@ -62,6 +66,9 @@ public class Player : MonoBehaviour {
 	IEnumerator endSend (float pDelay)
 	{
 		yield return new WaitForSeconds (pDelay);
+		foodCart++;
+		updateCart ();
+		updatePile ();
 		anim.SetInteger ("Send", 0);
 		sendingItem = false; 
 	}
@@ -71,8 +78,19 @@ public class Player : MonoBehaviour {
 		yield return new WaitForSeconds (pDelay);
 		anim.SetInteger ("Steal", 0);
 		foodStock++;
+		updateBag ();
+		updatePile ();
 		GameManager.ins.score = foodStock;
 		stealingItem = false; 
+	}
+
+	public void updateBag()
+	{
+
+		if (foodStock <= 4)
+		{
+			bag.sprite = bags[foodStock];
+		}
 	}
 
 	public void updateCart()
@@ -103,7 +121,41 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
-	
+
+	public void updatePile()
+	{
+		if (foodCart + foodStock == 0)
+		{
+			foodPiles[0].enabled = true;
+		}
+		else if (foodCart + foodStock >= 1 && foodCart + foodStock < 5)
+		{
+			for (int i = 0; i < foodCart + foodStock; i++)
+			{
+				if (i == foodCart + foodStock-1)
+				{
+					foodPiles[i].enabled = true;
+				}
+				else 
+				{
+					foodPiles[i].enabled = false;
+				}
+			}
+		}
+		else
+		{
+			foreach (SpriteRenderer s in foodPiles)
+			{
+				foodPiles[0].enabled = false;
+			}
+		}
+	}
+
+	public void byeFriend()
+	{
+		friend.enabled = false;
+	}
+
 	public void initializePlayer()
 	{
 		lives = 2;
@@ -115,5 +167,6 @@ public class Player : MonoBehaviour {
 		anim = gameObject.GetComponent <Animator> ();
 		anim.SetInteger ("Send", 0);
 		anim.SetInteger ("Steal", 0);
+		updatePile ();
 	}
 }

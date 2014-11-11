@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		updateHunger ();
 	}
 
 	void updateHunger()
@@ -40,6 +40,6 @@ public class GameManager : MonoBehaviour {
 	public void endGame()
 	{
 		print ("end");
-		//Application.LoadLevel ("Scores");
+		Application.LoadLevel ("Scores");
 	}
 }
