@@ -17,6 +17,11 @@ public class Enemy : MonoBehaviour {
 
 	public int minDelay;
 	public int maxDelay;
+
+	public float eatDelay;
+	public float angerDelay;
+	public float deadDelay;
+	public float lookDelay;
 	
 	void Start () 
 	{
@@ -28,16 +33,12 @@ public class Enemy : MonoBehaviour {
 		if (!hungry)
 		{
 			hungerLevel ();
-			if (!lookingAtElves)
-			{
-				//StartCoroutine (lookAway ((float) Random.Range (minDelay, maxDelay)));
-			}
 
-			if (lookingAtElves || hungry)
+			if (hungry)
 			{
 				print ("turn around");
 				anim.SetInteger ("Look", 1);
-				StartCoroutine (stopLooking (0.5f));
+				StartCoroutine (stopLooking ());
 				if (player.foodCart <= 0 || player.stealingItem)
 				{
 					getMad ();
@@ -50,7 +51,7 @@ public class Enemy : MonoBehaviour {
 					bagbearer.enabled = true;
 					bagAnim.SetInteger ("TakeBag", 1);
 					lookingAtElves = false;
-					StartCoroutine (stopEating (1.0f));
+					StartCoroutine (stopEating ());
 				}
 			}
 		}
@@ -79,17 +80,17 @@ public class Enemy : MonoBehaviour {
 		print ("mad");
 		anim.SetInteger ("Angry", 1);
 		currentHunger = 0;
-		StartCoroutine (stopAnger (0.4f));
+		StartCoroutine (stopAnger ());
 		hungry = false;
 	}
 
 	// if giant eats cart food
-	IEnumerator stopEating(float pDelay)
+	IEnumerator stopEating()
 	{
 		print ("stop eating");
 		currentHunger -= ((float)player.foodCart / (float)player.maxFood)*maxHunger;
 		player.foodCart = 0;
-		yield return new WaitForSeconds(pDelay);
+		yield return new WaitForSeconds(eatDelay);
 		player.sendingCart = false;
 		anim.SetInteger ("Look", 0);
 		cartAnim.SetInteger ("FeedGiant", 0);
@@ -102,21 +103,15 @@ public class Enemy : MonoBehaviour {
 	}
 
 
-	IEnumerator stopLooking (float pDelay)
+	IEnumerator stopLooking ()
 	{
-		yield return new WaitForSeconds(pDelay);
+		yield return new WaitForSeconds(lookDelay);
 		anim.SetInteger ("Look", 0);
 	}
 
-	IEnumerator lookAway(float pDelay)
+	IEnumerator stopAnger ()
 	{
-		yield return new WaitForSeconds (pDelay);
-		lookingAtElves = true;
-	}
-
-	IEnumerator stopAnger (float pDelay)
-	{
-		yield return new WaitForSeconds (pDelay);
+		yield return new WaitForSeconds (angerDelay);
 		anim.SetInteger ("Angry", 0);
 		if (player.lives == 2)
 		{
@@ -124,7 +119,7 @@ public class Enemy : MonoBehaviour {
 			player.byeFriend ();
 			player.foodStock = 0;
 			player.updateBag ();
-			GameManager.ins.score = player.foodStock;
+			GameManager.ins.score += player.foodStock;
 			lookingAtElves = false;
 		}
 		else if (player.lives == 1)
@@ -135,16 +130,10 @@ public class Enemy : MonoBehaviour {
 
 	}
 
-	IEnumerator stopCart(float pDelay)
-	{
-		yield return new WaitForSeconds (pDelay);
-		cartAnim.SetInteger ("FeedGiant", 1);
-	}
-
 	IEnumerator lastLife()
 	{
 		player.anim.SetBool ("Dead", true);
-		yield return new WaitForSeconds (1.0f);
+		yield return new WaitForSeconds (deadDelay);
 		GameManager.ins.endGame();
 	}
 

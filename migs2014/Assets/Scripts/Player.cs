@@ -94,13 +94,12 @@ public class Player : MonoBehaviour {
 		foodStock++;
 		updateBag ();
 		updatePile ();
-		GameManager.ins.score = foodStock;
+		//GameManager.ins.score = foodStock;
 		stealingItem = false; 
 	}
 
 	public void updateBag()
 	{
-
 		if (foodStock <= 4)
 		{
 			bag.sprite = bags[foodStock];
