@@ -138,7 +138,7 @@ public class Enemy : MonoBehaviour {
 	IEnumerator stopCart(float pDelay)
 	{
 		yield return new WaitForSeconds (pDelay);
-		cartAnim.SetInteger ("FeedGiant", 1);
+		cartAnim.SetInteger ("FeedGiant", 0);
 	}
 
 	IEnumerator lastLife()
